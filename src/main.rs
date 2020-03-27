@@ -10,8 +10,6 @@ mod sitekey;
 mod templates;
 mod identicon;
 
-mod tests;
-
 fn main() {
     let _ = env_logger::try_init();
     let matches = App::new("MPW password generator")
