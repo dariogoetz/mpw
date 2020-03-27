@@ -1,4 +1,4 @@
-use super::common::{PasswordType, KEY_LENGTH};
+use super::common::PasswordType;
 
 pub fn get_template(sitekey_byte: u8, site_type: &PasswordType) -> &'static str {
     let templates = match site_type {
