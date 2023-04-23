@@ -15,21 +15,25 @@ pub enum PasswordType {
     Basic,
     PIN,
     Name,
-    Phrase
+    Phrase,
 }
 
 pub fn get_scope(purpose: &Purpose) -> &'static str {
     let scope = match purpose {
-        Authentication => "com.lyndir.masterpassword",
-        Identification => "com.lyndir.masterpassword.login",
-        Recovery => "com.lyndir.masterpassword.answer",
+        Purpose::Authentication => "com.lyndir.masterpassword",
+        Purpose::Identification => "com.lyndir.masterpassword.login",
+        Purpose::Recovery => "com.lyndir.masterpassword.answer",
     };
 
     scope
 }
 
-
 #[inline(always)]
 pub fn u32_to_bytes(u: u32) -> [u8; 4] {
-    [((u >> 24) & 0xff) as u8, ((u >> 16) & 0xff) as u8, ((u >> 8) & 0xff) as u8, (u & 0xff) as u8]
+    [
+        ((u >> 24) & 0xff) as u8,
+        ((u >> 16) & 0xff) as u8,
+        ((u >> 8) & 0xff) as u8,
+        (u & 0xff) as u8,
+    ]
 }

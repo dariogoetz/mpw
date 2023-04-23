@@ -1,11 +1,5 @@
 use super::common;
-use crypto::{
-    hmac::Hmac,
-    mac::Mac,
-    sha2::Sha256
-};
-use log::*;
-
+use crypto::{hmac::Hmac, mac::Mac, sha2::Sha256};
 
 fn get_seed(site_name: &str, scope: &str, counter: i32) -> Vec<u8> {
     let mut seed = Vec::new();
@@ -17,7 +11,12 @@ fn get_seed(site_name: &str, scope: &str, counter: i32) -> Vec<u8> {
     seed
 }
 
-pub fn gen_sitekey(masterkey: &[u8; common::KEY_LENGTH], site_name: &str, purpose: &common::Purpose, counter: i32) -> Vec<u8> {
+pub fn gen_sitekey(
+    masterkey: &[u8; common::KEY_LENGTH],
+    site_name: &str,
+    purpose: &common::Purpose,
+    counter: i32,
+) -> Vec<u8> {
     let scope = common::get_scope(purpose);
     let seed = get_seed(site_name, scope, counter);
 
