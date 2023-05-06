@@ -1,6 +1,7 @@
 use std::fmt::Display;
 
-use crypto::{hmac::Hmac, mac::Mac, sha2::Sha256};
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
 
 pub enum Color {
     Red = 1,
@@ -37,6 +38,8 @@ pub struct Identicon {
 
 impl Identicon {
     pub fn new(full_name: &str, master_password: &str) -> Identicon {
+        type HmacSha256 = Hmac<Sha256>;
+
         let left_arm = vec!['╔', '╚', '╰', '═'];
         let right_arm = vec!['╗', '╝', '╯', '═'];
         let body = ['█', '░', '▒', '▓', '☺', '☻'];
@@ -46,10 +49,15 @@ impl Identicon {
             '♙', '♚', '♛', '♜', '♝', '♞', '♟', '♨', '♩', '♪', '♫', '⚐', '⚑', '⚔', '⚖', '⚙', '⚠',
             '⌘', '⏎', '✄', '✆', '✈', '✉', '✌',
         ];
-        let mut hmac = Hmac::new(Sha256::new(), master_password.as_bytes());
-        hmac.input(&full_name.as_bytes());
+        let mut hmac = HmacSha256::new_from_slice(master_password.as_bytes()).unwrap();
+        hmac.update(&full_name.as_bytes());
 
-        let seed: Vec<usize> = hmac.result().code().iter().map(|i| *i as usize).collect();
+        let seed: Vec<usize> = hmac
+            .finalize()
+            .into_bytes()
+            .iter()
+            .map(|i| *i as usize)
+            .collect();
 
         Identicon {
             left_arm: left_arm[seed[0] % left_arm.len()],

@@ -1,7 +1,9 @@
 use crate::password_type::PasswordType;
 
-use crypto::scrypt::{scrypt, ScryptParams};
-use crypto::{hmac::Hmac, mac::Mac, sha2::Sha256};
+use scrypt::{scrypt, Params};
+
+use hmac::{Hmac, Mac};
+use sha2::Sha256;
 
 pub const KEY_LENGTH: usize = 64;
 
@@ -39,7 +41,7 @@ fn u32_to_bytes(u: u32) -> [u8; 4] {
 
 impl MasterKey {
     pub fn new(full_name: &str, password: &str, purpose: &Purpose) -> Self {
-        let params = ScryptParams::new(15, 8, 2);
+        let params = Params::new(15, 8, 2, KEY_LENGTH).unwrap();
 
         let scope = purpose.scope();
 
@@ -49,7 +51,7 @@ impl MasterKey {
         seed.extend_from_slice(full_name.as_bytes());
 
         let mut key = [0u8; KEY_LENGTH];
-        scrypt(password.as_bytes(), &seed, &params, &mut key);
+        scrypt(password.as_bytes(), &seed, &params, &mut key).unwrap();
 
         MasterKey {
             key,
@@ -72,6 +74,8 @@ impl MasterKey {
     }
 
     fn gen_sitekey(&self, site_name: &str, counter: i32) -> Vec<u8> {
+        type HmacSha256 = Hmac<Sha256>;
+
         let scope = self.purpose.scope();
 
         let mut seed = Vec::new();
@@ -80,9 +84,9 @@ impl MasterKey {
         seed.extend_from_slice(site_name.as_bytes());
         seed.extend_from_slice(&u32_to_bytes(counter as u32));
 
-        let mut hmac = Hmac::new(Sha256::new(), &self.key);
-        hmac.input(&seed);
+        let mut hmac = HmacSha256::new(&self.key.into());
+        hmac.update(&seed);
 
-        hmac.result().code().to_vec()
+        hmac.finalize().into_bytes().to_vec()
     }
 }
