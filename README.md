@@ -1,3 +1,3 @@
-# Masterpassword CLI
+# Masterpassword Library for Rust
 
-Simple commandline tool for generating passwords following the [masterpasswordapp](http://www.masterpasswordapp.com) algorithm.
+Functionality for generating strong password using the [masterpasswordapp](http://www.masterpasswordapp.com) algorithm.
