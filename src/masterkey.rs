@@ -24,6 +24,7 @@ impl Purpose {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct MasterKey {
     key: [u8; KEY_LENGTH],
     purpose: Purpose,
